@@ -48,7 +48,7 @@ The OAuth 2.0 spec has four important roles:
 
 Other important terms:
 
-- An OAuth 2.0 "grant" is the authorization given (or "granted") to the client by the user. Examples of grants are "authorization code" and "client credentials".
+- An OAuth 2.0 "grant" is the authorization given (or "granted") to the client by the user. Examples of grants are "authorization code" and "client credentials". Each OAuth grant has a corresponding flow, explained below.
 - The "access token" is issued by the authorization server (Okta) in exchange for the grant.
 - The "refresh token" is an optional token that is exchanged for a new access token if the access token has expired.
 
@@ -63,8 +63,7 @@ The usual OAuth 2.0 grant flow looks like this:
 >
 > If you'd like to see the OAuth 2.0 spec, you can find it here: <https://tools.ietf.org/html/rfc6749>
 
-At the core of both OAuth 2.0 and its OpenID Connect extension is the authorization server. An authorization server is simply an OAuth 2.0 token minting engine. Each authorization server has a unique issuer URI
-and its own signing key for tokens in order to keep proper boundary between security domains. In the context of this guide, Okta is your authorization server.
+At the core of both OAuth 2.0 and its OpenID Connect extension is the authorization server. An authorization server is simply an OAuth 2.0 token minting engine. Each authorization server has a unique issuer URI and its own signing key for tokens in order to keep a proper boundary between security domains. In the context of this guide, Okta is your authorization server.
 
 The authorization server also acts as an OpenID Connect Provider,
 which means you can request [ID tokens](/standards/OIDC/index.html#id-token)
@@ -89,9 +88,11 @@ The high-level flow looks the same for both OIDC and regular OAuth 2.0 flows, th
 
 ## Choosing an OAuth 2.0 Flow
 
+Depending on your use case, you will need to use a different OAuth flow. This section will help you choose an OAuth flow based on (1) the type of token you need, and/or (2) the type of client application that you are building.
+
 ### Does your application need an ID token?
 
-Any flow will be able to grant you an access token, but not all flows support ID tokens.
+Any OAuth flow can give you an access token, but not all support ID tokens.
 
 |                                  | Access Token   | ID Token   |
 |----------------------------------|:--------------:|:----------:|
@@ -103,43 +104,9 @@ Any flow will be able to grant you an access token, but not all flows support ID
 
 ### What kind of client are you building?
 
-Depending on what kind of client you are building, you will want to use a different OAuth 2.0 flow. The flowchart below can quickly help you decide which flow to use. Further explanation about each flow is included below.
+Depending on what kind of client you are building, you will want to use a different OAuth 2.0 flow. The flowchart below can quickly help you decide which flow to use. Further explanation about each is included below.
 
 {% img oauth_grant_flowchart.png alt:"OAuth Flow Diagram" width:"800px" %}
-
-<!-- Source for image. Generated using http://www.plantuml.com/plantuml/uml/
-
-@startuml
-
-skinparam monochrome true
-
-start
-
-if (Is your client public?) then (yes)
-    if (Is your client a SPA or native app?) then (SPA)
-    :Implicit Flow;
-    end
-    else (native)
-    :Auth Code w PKCE;
-    end
-    endif
-else(no)
-
-if (Does the client have \nan end-user?) then (no)
-  :Client Credentials Flow;
-  end
-else (yes)
-
-if (Is the client highly trusted \nand other flows are not \nviable?) then (yes)
-  :Resource Owner Flow;
-  end
-else (no)
-  :Authorization Code Flow;
-  end
-
-@enduml
-
--->
 
 ##### Is your client public?
 
@@ -147,17 +114,17 @@ A client application is considered "public" when an end-user could possibly view
 
 ###### Is your client a SPA or native?
 
-If your client application is a Single Page Application (SPA), you should use the [Implicit flow](#implicit-flow).
+If your client application is a Single Page Application (SPA), you should use the [Implicit grant](#implicit-flow).
 
-If your client application is a native application, you should use the [Authorization code flow with PKCE](#authorization-code-with-pkce).
+If your client application is a native application, you should use the [Authorization code with PKCE](#authorization-code-with-pkce) grant.
 
 ##### Does the client have an end-user?
 
-If your client application is running on a server with no direct end-user, then it can be trusted to store credentials and use them responsibly. If your client application will only be doing machine-to-machine interaction, then you should use the [Client Credentials flow](#client-credentials-flow).
+If your client application is running on a server with no direct end user, then it can be trusted to store credentials and use them responsibly. If your client application will only be doing machine-to-machine interaction, then you should use the [Client Credentials grant](#client-credentials-flow).
 
 ##### Does the resource owner own the client?
 
-If you own both the client application and the resource that it is accessing, then your application can be trusted to store your end-user's login and password. Because of the high degree of trust required here, you should only use this flow if other flows are not viable. In this case, you can use the [Resource Owner Password flow](#resource-owner-password-flow).
+If you own both the client application and the resource that it is accessing, then your application can be trusted to store your end-user's login and password. Because of the high degree of trust required here, you should only use this flow if other flows are not viable. In this case, you can use the [Resource Owner Password grant](#resource-owner-password-flow).
 
 ### Authorization Code Flow
 
