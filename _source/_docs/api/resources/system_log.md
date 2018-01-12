@@ -276,7 +276,7 @@ Describes the client performing the action.
 
 ### GeographicalContext Object
 
-Describes the physical location of the client that performs the action that kicks off this event.
+Describes a physical location on Earth. In the context of the [Client](#client-object) object, the geographical context refers to the physical location of the client when it sends the request that triggers this event.
 
 |-------------+-----------------------------------------------------------------------------------------+---------------------------------------+----------|
 | Property    | Description                                                                             | DataType                              | Nullable |
